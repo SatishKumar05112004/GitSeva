@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GitSeva</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 GitSeva</h1>
+    <input type="text" id="usernameInput" placeholder="Enter GitHub username..." />
+    <button onclick="getUser()">Search</button>
+
+    <div id="result" class="card hidden">
+      <img id="avatar" />
+      <h2 id="name"></h2>
+      <p id="bio"></p>
+      <p><strong>Repos:</strong> <span id="repos"></span></p>
+      <p><strong>Followers:</strong> <span id="followers"></span></p>
+      <p><strong>Profile:</strong> <a id="profileLink" target="_blank">Visit</a></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
