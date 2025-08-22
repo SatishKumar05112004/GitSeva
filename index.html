@@ -1,26 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GitSeva</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Gitseva</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1>🧠 GitSeva</h1>
-    <input type="text" id="usernameInput" placeholder="Enter GitHub username..." />
-    <button onclick="getUser()">Search</button>
+  <div class="overlay"></div>
 
-    <div id="result" class="card hidden">
-      <img id="avatar" />
-      <h2 id="name"></h2>
-      <p id="bio"></p>
-      <p><strong>Repos:</strong> <span id="repos"></span></p>
-      <p><strong>Followers:</strong> <span id="followers"></span></p>
-      <p><strong>Profile:</strong> <a id="profileLink" target="_blank">Visit</a></p>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🧠</span>
+      <h1>Gitseva</h1>
     </div>
-  </div>
+    <div class="actions">
+      <button id="toggleTheme" aria-label="Toggle theme">🌙</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tabs">
+      <button class="tab active" data-tab="single">Search</button>
+      <button class="tab" data-tab="compare">Compare</button>
+    </div>
+
+    <!-- Single -->
+    <section id="tab-single" class="tabpanel active">
+      <form id="searchForm" class="searchbar" autocomplete="off">
+        <input id="usernameInput" type="text" placeholder="Enter GitHub username" aria-label="GitHub username"/>
+        <button type="submit">Search</button>
+      </form>
+
+      <div id="error" class="alert hidden"></div>
+      <div id="loading" class="alert info hidden">Loading…</div>
+
+      <section class="grid">
+        <!-- Profile -->
+        <article id="result" class="card profile hidden">
+          <div class="profile-top">
+            <img id="avatar" alt="Avatar"/>
+            <div>
+              <h2 id="name">—</h2>
+              <p class="muted" id="bio">—</p>
+              <div class="meta">
+                <span id="company" class="chip hidden"></span>
+                <span id="location" class="chip hidden"></span>
+                <a id="blog" class="chip hidden" target="_blank" rel="noopener">Website</a>
+                <a id="email" class="chip hidden" href="#" rel="noopener">Email</a>
+                <a id="twitter" class="chip hidden" target="_blank" rel="noopener">Twitter</a>
+                <span id="joined" class="chip hidden"></span>
+              </div>
+              <a id="profileLink" class="profile-link" target="_blank" rel="noopener">Open on GitHub ↗</a>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <span class="label">Repos</span>
+              <span class="value" id="repos">0</span>
+            </div>
+            <div class="stat">
+              <span class="label">Followers</span>
+              <span class="value"><a id="followers" target="_blank" rel="noopener">0</a></span>
+            </div>
+            <div class="stat">
+              <span class="label">Following</span>
+              <span class="value"><a id="following" target="_blank" rel="noopener">0</a></span>
+            </div>
+            <div class="stat">
+              <span class="label">Gists</span>
+              <span class="value" id="gists">0</span>
+            </div>
+          </div>
+
+          <div class="profile-actions">
+            <button id="btnSaveFav" type="button">⭐ Save</button>
+            <button id="btnDownload" type="button">⬇️ Download PDF</button>
+          </div>
+        </article>
+
+        <!-- Top repos -->
+        <article id="reposList" class="card hidden">
+          <div class="card-head">
+            <h3>Top Repositories</h3>
+            <div class="filters">
+              <select id="repoSort">
+                <option value="updated">Recently updated</option>
+                <option value="stars">Most starred</option>
+              </select>
+            </div>
+          </div>
+          <ul id="repoItems" class="repo-list"></ul>
+        </article>
+
+        <!-- Activity -->
+        <article id="activityCard" class="card hidden">
+          <div class="card-head">
+            <h3>Activity (Last 30 days)</h3>
+          </div>
+          <canvas id="activityChart" height="200"></canvas>
+          <p class="muted tiny">Counts commits from public push events. Private activity won’t appear.</p>
+        </article>
+
+        <!-- Organizations -->
+        <article id="orgsCard" class="card hidden">
+          <div class="card-head">
+            <h3>Organizations</h3>
+          </div>
+          <ul id="orgsList" class="orgs"></ul>
+        </article>
+
+        <!-- Favorites -->
+        <article id="favoritesSection" class="card hidden">
+          <div class="card-head">
+            <h3>Favorites</h3>
+            <button id="clearFav" class="ghost" type="button">Clear</button>
+          </div>
+          <ul id="favoriteList" class="fav-list"></ul>
+        </article>
+      </section>
+    </section>
+
+    <!-- Compare -->
+    <section id="tab-compare" class="tabpanel">
+      <form id="compareForm" class="searchbar two" autocomplete="off">
+        <input id="u1" type="text" placeholder="First username"/>
+        <input id="u2" type="text" placeholder="Second username"/>
+        <button type="submit">Compare</button>
+      </form>
+
+      <div id="cmpError" class="alert hidden"></div>
+      <div id="cmpLoading" class="alert info hidden">Loading…</div>
+
+      <section id="compareWrap" class="compare-grid hidden">
+        <article class="card mini" id="cmp1">
+          <div class="cmp-head">
+            <img id="c1avatar" alt="Avatar"/>
+            <div>
+              <h3 id="c1name">—</h3>
+              <a id="c1link" target="_blank" rel="noopener">Profile ↗</a>
+            </div>
+          </div>
+          <ul class="kv">
+            <li><span>Repos</span><strong id="c1repos">0</strong></li>
+            <li><span>Stars (top 100)</span><strong id="c1stars">0</strong></li>
+            <li><span>Followers</span><strong id="c1followers">0</strong></li>
+            <li><span>Following</span><strong id="c1following">0</strong></li>
+          </ul>
+        </article>
+
+        <article class="card mini" id="cmp2">
+          <div class="cmp-head">
+            <img id="c2avatar" alt="Avatar"/>
+            <div>
+              <h3 id="c2name">—</h3>
+              <a id="c2link" target="_blank" rel="noopener">Profile ↗</a>
+            </div>
+          </div>
+          <ul class="kv">
+            <li><span>Repos</span><strong id="c2repos">0</strong></li>
+            <li><span>Stars (top 100)</span><strong id="c2stars">0</strong></li>
+            <li><span>Followers</span><strong id="c2followers">0</strong></li>
+            <li><span>Following</span><strong id="c2following">0</strong></li>
+          </ul>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <script src="script.js"></script>
 </body>
